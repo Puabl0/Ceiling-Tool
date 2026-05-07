@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspended Ceiling Quote Tool</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); width: 100%; max-width: 400px; border-top: 5px solid #007bff; }
+        h2 { margin-top: 0; color: #1a1a1a; font-size: 24px; text-align: center; }
+        label { display: block; margin-top: 1.5rem; font-weight: 600; color: #444; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border 0.3s; }
+        input:focus { border-color: #007bff; outline: none; }
+        button { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 8px; margin-top: 2rem; font-size: 18px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .res-container { margin-top: 1.5rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; display: none; border-left: 4px solid #28a745; }
+        .price { font-size: 28px; color: #d9534f; font-weight: 800; margin: 10px 0; }
+        .vat { font-size: 16px; color: #555; font-weight: 600; }
+        .footer { font-size: 12px; color: #888; text-align: center; margin-top: 2rem; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Ceiling Quote Tool</h2>
+    
+    <label>Room Length (cm)</label>
+    <input type="number" id="L" placeholder="e.g. 500">
+
+    <label>Room Width (cm)</label>
+    <input type="number" id="W" placeholder="e.g. 400">
+
+    <label>Tile Grade</label>
+    <select id="G">
+        <option value="12.00">Basic Fissured (£12/m²)</option>
+        <option value="18.50">Vinyl/Clean Room (£18.50/m²)</option>
+        <option value="25.00">Acoustic Premium (£25/m²)</option>
+    </select>
+
+    <button onclick="calc()">Calculate My Quote</button>
+
+    <div id="out" class="res-container">
+        <div style="font-size: 14px; color: #666;">Estimated Project Cost:</div>
+        <div class="price" id="p1">£0.00</div>
+        <div class="vat">Total Inc. 20% VAT: <span id="p2">£0.00</span></div>
+        <div style="margin-top: 10px; font-size: 13px;">Total Area: <span id="sqm">0</span>m²</div>
+    </div>
+
+    <div class="footer">
+        *Estimate includes 10% waste for perimeter cuts.<br>
+        Labor and grid system components included.
+    </div>
+</div>
+
+<script>
+function calc() {
+    let l = document.getElementById('L').value;
+    let w = document.getElementById('W').value;
+    let g = document.getElementById('G').value;
+
+    if (l > 0 && w > 0) {
+        let area = (l * w) / 10000;
+        let withWaste = area * 1.10;
+        let net = withWaste * g;
+        let gross = net * 1.20;
+
+        document.getElementById('sqm').innerText = area.toFixed(2);
+        document.getElementById('p1').innerText = '£' + net.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+        document.getElementById('p2').innerText = '£' + gross.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+        document.getElementById('out').style.display = 'block';
+    } else {
+        alert("Please enter both length and width.");
+    }
+}
+</script>
+
+</body>
+</html>
