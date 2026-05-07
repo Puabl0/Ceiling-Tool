@@ -9,6 +9,121 @@
         .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); width: 100%; max-width: 400px; border-top: 6px solid #007bff; }
         h2 { margin-top: 0; color: #1a1a1a; font-size: 22px; text-align: center; }
         label { display: block; margin-top: 1.2rem; font-weight: 600; color: #444; font-size: 13px; }
+        input, select { width: 100%; padding: 12px; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .calc-btn { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 8px; margin-top: 1.5rem; font-size: 18px; cursor: pointer; font-weight: bold; }
+        .res-container { margin-top: 1.5rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; display: none; border-left: 4px solid #28a745; }
+        .price { font-size: 28px; color: #d9534f; font-weight: 800; margin: 5px 0; }
+        .contact-form { margin-top: 20px; padding-top: 20px; border-top: 2px dashed #ddd; display: none; }
+        .submit-btn { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; margin-top: 15px; font-weight: bold; cursor: pointer; }
+        #status { text-align: center; margin-top: 10px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Supply & Fit Quote Tool</h2>
+    
+    <label>Room Length (m)</label>
+    <input type="number" id="L" step="0.01" placeholder="e.g. 6.0">
+
+    <label>Room Width (m)</label>
+    <input type="number" id="W" step="0.01" placeholder="e.g. 4.0">
+
+    <label>Select Tile Grade</label>
+    <select id="G">
+        <option value="12.00">Basic Fissured (£12/m²)</option>
+        <option value="18.50">Vinyl/Clean Room (£18.50/m²)</option>
+        <option value="25.00">Acoustic Premium (£25/m²)</option>
+    </select>
+
+    <button class="calc-btn" onclick="calc()">Calculate My Quote</button>
+
+    <div id="out" class="res-container">
+        <div style="font-size: 14px; color: #666;">Estimated Project Total:</div>
+        <div class="price" id="p1Display">£0.00</div>
+        <div style="font-size: 15px; font-weight: 600; color: #555;">Inc. VAT: <span id="p2Display">£0.00</span></div>
+        
+        <div class="contact-form" id="contactArea">
+            <p style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Request formal quote:</p>
+            
+            <form id="quoteForm">
+                <input type="email" name="email" placeholder="Your Email Address" required>
+                <input type="tel" name="phone" placeholder="Phone Number (Optional)">
+                <input type="hidden" name="dimensions" id="hiddenDim">
+                <input type="hidden" name="tile_grade" id="hiddenGrade">
+                <input type="hidden" name="quote_total" id="hiddenTotal">
+                <button type="submit" class="submit-btn" id="submitBtn">Send My Quote Request</button>
+            </form>
+            <div id="status"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calc() {
+    let l = document.getElementById('L').value;
+    let w = document.getElementById('W').value;
+    let materialPrice = document.getElementById('G').value;
+    let gradeText = document.getElementById('G').options[document.getElementById('G').selectedIndex].text;
+    
+    if (l > 0 && w > 0) {
+        let area = l * w;
+        let net = ((area * 1.10) * materialPrice) + (area * 22);
+        let gross = net * 1.20;
+
+        let fNet = '£' + net.toLocaleString('en-GB', {minimumFractionDigits:2});
+        let fGross = '£' + gross.toLocaleString('en-GB', {minimumFractionDigits:2});
+
+        document.getElementById('p1Display').innerText = fNet;
+        document.getElementById('p2Display').innerText = fGross;
+        document.getElementById('out').style.display = 'block';
+        document.getElementById('contactArea').style.display = 'block';
+
+        document.getElementById('hiddenDim').value = l + "m x " + w + "m";
+        document.getElementById('hiddenGrade').value = gradeText;
+        document.getElementById('hiddenTotal').value = fNet;
+    }
+}
+
+// Handle Form Submission via Ajax
+var form = document.getElementById("quoteForm");
+async function handleSubmit(event) {
+    event.preventDefault();
+    var status = document.getElementById("status");
+    var data = new FormData(event.target);
+    fetch("https://formspree.io/f/xojrloao", {
+        method: "POST",
+        body: data,
+        headers: { 'Accept': 'application/json' }
+    }).then(response => {
+        if (response.ok) {
+            status.innerHTML = "Success! We will email you shortly.";
+            status.style.color = "#28a745";
+            status.style.display = "block";
+            form.reset();
+            document.getElementById("submitBtn").style.display = "none";
+        } else {
+            status.innerHTML = "Oops! There was a problem.";
+            status.style.color = "red";
+            status.style.display = "block";
+        }
+    });
+}
+form.addEventListener("submit", handleSubmit);
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply & Fit Quote Tool | Warwick Ceilings</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f2f5; padding: 20px; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); width: 100%; max-width: 400px; border-top: 6px solid #007bff; }
+        h2 { margin-top: 0; color: #1a1a1a; font-size: 22px; text-align: center; }
+        label { display: block; margin-top: 1.2rem; font-weight: 600; color: #444; font-size: 13px; }
         input[type="number"], input[type="email"], input[type="tel"], select { width: 100%; padding: 12px; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
         .calc-btn { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 8px; margin-top: 1.5rem; font-size: 18px; cursor: pointer; font-weight: bold; }
