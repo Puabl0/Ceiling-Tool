@@ -24,11 +24,11 @@
 <div class="card">
     <h2>Ceiling Quote Tool</h2>
     
-    <label>Room Length (cm)</label>
-    <input type="number" id="L" placeholder="e.g. 500">
+    <label>Room Length (m)</label>
+    <input type="number" id="L" step="0.01" placeholder="e.g. 5.5">
 
-    <label>Room Width (cm)</label>
-    <input type="number" id="W" placeholder="e.g. 400">
+    <label>Room Width (m)</label>
+    <input type="number" id="W" step="0.01" placeholder="e.g. 4.2">
 
     <label>Tile Grade</label>
     <select id="G">
@@ -54,12 +54,13 @@
 
 <script>
 function calc() {
-    let l = document.getElementById('L').value;
-    let w = document.getElementById('W').value;
-    let g = document.getElementById('G').value;
+    // Math updated: no longer dividing by 10000 since inputs are already metres
+    let l = parseFloat(document.getElementById('L').value);
+    let w = parseFloat(document.getElementById('W').value);
+    let g = parseFloat(document.getElementById('G').value);
 
     if (l > 0 && w > 0) {
-        let area = (l * w) / 10000;
+        let area = l * w;
         let withWaste = area * 1.10;
         let net = withWaste * g;
         let gross = net * 1.20;
