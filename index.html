@@ -11,11 +11,6 @@
         label { display: block; margin-top: 1.2rem; font-weight: 600; color: #444; font-size: 14px; }
         input[type="number"], select { width: 100%; padding: 12px; margin-top: 0.5rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        /* Installation Checkbox Styling */
-        .checkbox-container { display: flex; align-items: center; margin-top: 1.5rem; background: #eef6ff; padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid #cce3ff; }
-        .checkbox-container input { margin-right: 12px; width: 20px; height: 20px; cursor: pointer; }
-        .checkbox-text { font-size: 14px; font-weight: 600; color: #0056b3; }
-
         button { width: 100%; padding: 16px; background: #007bff; color: white; border: none; border-radius: 8px; margin-top: 1.5rem; font-size: 18px; cursor: pointer; font-weight: bold; }
         button:hover { background: #0056b3; }
         
@@ -28,7 +23,7 @@
 <body>
 
 <div class="card">
-    <h2>Ceiling Quote Tool</h2>
+    <h2>Supply & Fit Quote Tool</h2>
     
     <label>Room Length (m)</label>
     <input type="number" id="L" step="0.01" placeholder="e.g. 6.0">
@@ -36,33 +31,28 @@
     <label>Room Width (m)</label>
     <input type="number" id="W" step="0.01" placeholder="e.g. 4.0">
 
-    <label>Tile Grade</label>
+    <label>Select Tile Grade</label>
     <select id="G">
         <option value="12.00">Basic Fissured (£12/m²)</option>
         <option value="18.50">Vinyl/Clean Room (£18.50/m²)</option>
         <option value="25.00">Acoustic Premium (£25/m²)</option>
     </select>
 
-    <label class="checkbox-container">
-        <input type="checkbox" id="install">
-        <span class="checkbox-text">Include Installation (+£22/m²)</span>
-    </label>
-
-    <button onclick="calc()">Calculate Quote</button>
+    <button onclick="calc()">Calculate My Quote</button>
 
     <div id="out" class="res-container">
-        <div style="font-size: 14px; color: #666;" id="quote-type">Supply & Fit Estimate:</div>
+        <div style="font-size: 14px; color: #666;">Estimated Project Total:</div>
         <div class="price" id="p1">£0.00</div>
         <div class="vat">Total Inc. 20% VAT: <span id="p2">£0.00</span></div>
-        <div style="margin-top: 10px; font-size: 13px; color: #444;">
-            Total Area: <span id="sqm">0</span>m²<br>
-            <span id="breakdown" style="font-size: 11px; color: #777;"></span>
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+        <div style="font-size: 13px; color: #444;">
+            Total Area: <span id="sqm">0</span>m²
         </div>
     </div>
 
     <div class="footer">
-        *Estimate includes 10% waste for cuts.<br>
-        Covers tiles, grid system, and selected labour.
+        *Estimate based on £22/m² installation rate.<br>
+        Includes 10% material waste for cutting.
     </div>
 </div>
 
@@ -71,31 +61,26 @@ function calc() {
     let l = parseFloat(document.getElementById('L').value);
     let w = parseFloat(document.getElementById('W').value);
     let materialPrice = parseFloat(document.getElementById('G').value);
-    let includeInstall = document.getElementById('install').checked;
     
     let laborRate = 22.00;
 
     if (l > 0 && w > 0) {
         let area = l * w;
+        
+        // Materials (including 10% waste)
         let areaWithWaste = area * 1.10;
-        
         let netMaterials = areaWithWaste * materialPrice;
-        let netLabor = includeInstall ? (area * laborRate) : 0;
         
+        // Labor (based on actual room area)
+        let netLabor = area * laborRate;
+        
+        // Totals
         let totalNet = netMaterials + netLabor;
         let totalGross = totalNet * 1.20;
 
-        // Update Text labels
-        document.getElementById('quote-type').innerText = includeInstall ? "Supply & Fit Estimate:" : "Supply Only Estimate:";
         document.getElementById('sqm').innerText = area.toFixed(2);
-        document.getElementById('p1').innerText = '£' + totalNet.toLocaleString('en-GB', {minimumFractionDigits:2});
-        document.getElementById('p2').innerText = '£' + totalGross.toLocaleString('en-GB', {minimumFractionDigits:2});
-        
-        // Show breakdown
-        let breakdownText = "Materials: £" + netMaterials.toFixed(2);
-        if(includeInstall) breakdownText += " | Labour: £" + netLabor.toFixed(2);
-        document.getElementById('breakdown').innerText = breakdownText;
-
+        document.getElementById('p1').innerText = '£' + totalNet.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+        document.getElementById('p2').innerText = '£' + totalGross.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
         document.getElementById('out').style.display = 'block';
     } else {
         alert("Please enter both length and width.");
